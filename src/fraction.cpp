@@ -1,4 +1,4 @@
-#include "fraction.h"
+#include "fraction.hpp"
 
 Fraction::Fraction(int num, int den = 1)
     :numer(num), denom(den)
@@ -34,13 +34,13 @@ Fraction::operator double()
     return (num / denom);
 }
 
-const Fraction Fraction::operator+ () const
+const Fraction Fraction::operator+ ()
 {
     Fraction temp(+numer, denom);
     return temp;
 }
 
-const Fraction Fraction::operator- () const
+const Fraction Fraction::operator- ()
 {
     Fraction temp(-numer, denom);
     return temp;
@@ -117,4 +117,109 @@ Fraction& Fraction::operator/=(const Fraction& right)
     return *this;
 }
 
+const Fraction operator+(const Fraction& left, const Fraction& right)
+{
+    int newNumer = left.numer * right.denom + right.numer * left.denom;
+    int newDenom = left.denom * right.denom;
+    Fraction result(newNumer, newDenom);
+    return result;
+}
 
+const Fraction operator-(const Fraction& left, const Fraction& right)
+{
+    int newNumer = left.numer * right.denom - right.numer * left.denom;
+    int newDenom = left.denom * right.denom;
+    Fraction result(newNumer, newDenom);
+    return result;
+}
+
+const Fraction operator*(const Fraction& left, const Fraction& right)
+{
+    int newNumer = left.numer * right.numer;
+    int newDenom = left.denom * right.denom;
+    Fraction result(newNumer, newDenom);
+    return result;
+}
+
+const Fraction operator/(const Fraction& left, const Fraction& right)
+{
+    int newNumer = left.numer * right.denom;
+    int newDenom = left.denom * right.numer;
+    Fraction result(newNumer, newDenom);
+    return result;
+}
+
+bool operator==(const Fraction& left, const Fraction& right)
+{
+    return (left.numer * right.denom == right.numer * left.denom);
+}
+
+bool operator!=(const Fraction& left, const Fraction& right)
+{
+    return (left.numer * right.denom != right.numer * left.denom);
+}
+
+bool operator<(const Fraction& left, const Fraction& right)
+{
+    return (left.numer * right.denom < right.numer * left.denom);
+}
+
+bool operator<=(const Fraction& left, const Fraction& right)
+{
+    return (left.numer * right.denom <= right.numer * left.denom);
+}
+
+bool operator>(const Fraction& left, const Fraction& right)
+{
+    return (left.numer * right.denom > right.numer * left.denom);
+}
+
+bool operator>=(const Fraction& left, const Fraction& right)
+{
+    return (left.numer * right.denom >= right.numer * left.denom);
+}
+
+std::istream& operator>>(std::istream& left, Fraction& right)
+{
+    std::cout << "Enter the value of numerator: ";
+    left >> right.numer;
+    std::cout << "Enter the value of denominator: ";
+    left >> right.denom;
+    right.normalize();
+    return left;
+}
+
+std::ostream& operator<<(std::ostream& left, const Fraction& right)
+{
+    left << right.numer << "/" << right.denom;
+    return left;
+}
+
+int Fraction::gcd(int n, int m)
+{
+    int gcd = 1;
+    for (int k = 1; k <= n && k <= m; ++k)
+    {
+        if (n % k == 0 && m % k == 0) gcd = k;
+    }
+    return gcd;
+}
+
+void Fraction::normalize()
+{
+    if (denom == 0)
+    {
+        std::cout << "Invalid denominator in fraction. Need to quit.\n";
+        assert(false);
+    }
+
+    if (denom < 0)
+    {
+        denom = -denom;
+        numer = -numer;
+    }
+
+    int divisor = gcd(abs(numer), abs(denom));
+    numer = numer / divisor;
+    denom = denom / divisor;
+}
